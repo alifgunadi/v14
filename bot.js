@@ -20,7 +20,7 @@ for (const folder of functionFolders) {
         .readdirSync(`./src/functions/${folder}`)
         .filter(file => file.endsWith(".js"));
     for (const file of functionFiles)
-        require(`./functions/${folder}/${file}`)(client);
+        require(`./src/functions/${folder}/${file}`)(client);
 };
 
 client.handleEvents();
@@ -36,10 +36,12 @@ client.on('ready', () => {
         console.log('Guild not found');
     };
 
+    client.user.setActivity('your screen');
+
     client.user.setPresence({
         status: 'dnd',
         activity: {
-            name: 'watching your screen',
+            name: 'your screen',
             type: 'PLAYING'
         }
     });
@@ -56,7 +58,7 @@ async function updateMemberCount(guild) {
 
     const totalUsersChannel = guild.channels.cache.get('1109079433387716628');
     if (totalUsersChannel) {
-        totalUsersChannel.setName(`All members: ${totalUsers}`)
+        totalUsersChannel.setName(`👥・All members: ${totalUsers}`)
             .catch(console.error);
     } else {
         console.log('Total Users channel not found');
@@ -64,7 +66,7 @@ async function updateMemberCount(guild) {
 
     const membersChannel = guild.channels.cache.get('1109079465251840132');
     if (membersChannel) {
-        membersChannel.setName(`Members: ${members}`)
+        membersChannel.setName(`👥・Members: ${members}`)
             .catch(console.error);
     } else {
         console.log('Members channel not found');
@@ -72,7 +74,7 @@ async function updateMemberCount(guild) {
 
     const botsChannel = guild.channels.cache.get('1109079483450921110');
     if (botsChannel) {
-        botsChannel.setName(`Bots: ${bots}`)
+        botsChannel.setName(`🤖・Bots: ${bots}`)
             .catch(console.error);
     } else {
         console.log('Bots channel not found');
