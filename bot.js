@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { token } = process.env;
-const { Client, Collection, GatewayIntentBits } = require("discord.js");
+const { Client, Collection, GatewayIntentBits, ActivityType } = require("discord.js");
+const { Configuration, OpenAIApi } = require('openai')
 const fs = require("fs");
 
 const client = new Client({ 
@@ -36,21 +37,58 @@ client.on('ready', () => {
         console.log('Guild not found');
     };
 
-    client.user.setStatus('dnd');
-    client.user.setActivity('your screen');
+    // client.user.setStatus('dnd');
 
-    // client.user.setPresence({
-    //     status: 'dnd',
-    //     activity: {
-    //         name: "your screen",
-    //         type: 'WATCHING'
-    //     }
-    // });
+    client.user.setPresence({
+        activities: [{ name: `your screen`, type: ActivityType.Watching }],
+        status: 'dnd',
+      });
 });
 
-client.on('guildMemberAdd', (member) => {
-    updateMemberCount(member.guild);
-});
+    const configuration = new Configuration({
+        apiKey: process.env.API_CHAT_AI
+    });
+
+    const openai = new OpenAIApi(configuration);
+
+    client.on('messageCreate', async (message) => {
+        if (message.author.bot) return;
+        if (message.channel.id !== process.env.CHANNEL_ID) return;
+        if (message.content.startsWith('!')) return;
+
+        let conversationLog = [{ role: "system", content: "You are a friendly chatbot."}];
+        await message.channel.sendTyping();
+
+        let prevMessages = await message.channel.messages.fetch({ limit: 15 });
+        prevMessages.reverse();
+        prevMessages.forEach((msg) => {
+            if (message.content.startsWith('!')) return;
+            if (msg.author.id !== client.user.id && message.author.bot) return;
+            if (msg.author.id !== message.author.id) return;
+
+            conversationLog.push({
+                role: "user",
+                content: msg.content,
+            })
+        })
+
+        conversationLog.push({
+            role: 'user',
+            content: message.content,
+        });
+
+
+        const result = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: conversationLog,
+        });
+
+        message.reply(result.data.choices[0].message);
+    })
+
+    client.on('guildMemberAdd', (member) => {
+        updateMemberCount(member.guild);
+    });
 
 async function updateMemberCount(guild) {
     const totalUsers = guild.memberCount;
