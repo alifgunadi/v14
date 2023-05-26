@@ -36,15 +36,16 @@ client.on('ready', () => {
         console.log('Guild not found');
     };
 
+    client.user.setStatus('dnd');
     client.user.setActivity('your screen');
 
-    client.user.setPresence({
-        status: 'dnd',
-        activity: {
-            name: 'your screen',
-            type: 'PLAYING'
-        }
-    });
+    // client.user.setPresence({
+    //     status: 'dnd',
+    //     activity: {
+    //         name: "your screen",
+    //         type: 'WATCHING'
+    //     }
+    // });
 });
 
 client.on('guildMemberAdd', (member) => {
@@ -55,6 +56,8 @@ async function updateMemberCount(guild) {
     const totalUsers = guild.memberCount;
     const members = guild.members.cache.filter(member => !member.user.bot).size;
     const bots = guild.members.cache.filter(member => member.user.bot).size;
+    const onlineUsers = guild.members.cache.filter(member => member.presence?.status === 'online').size;
+
 
     const totalUsersChannel = guild.channels.cache.get('1109079433387716628');
     if (totalUsersChannel) {
@@ -74,11 +77,12 @@ async function updateMemberCount(guild) {
 
     const botsChannel = guild.channels.cache.get('1109079483450921110');
     if (botsChannel) {
-        botsChannel.setName(`🤖・Bots: ${bots}`)
+        botsChannel.setName(`🤖・${bots} 🟢・${onlineUsers}`)
             .catch(console.error);
     } else {
         console.log('Bots channel not found');
     }
-}
+};
+
 
 client.login(token);
