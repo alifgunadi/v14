@@ -57,6 +57,8 @@ async function updateMemberCount(guild) {
     const members = guild.members.cache.filter(member => !member.user.bot).size;
     const bots = guild.members.cache.filter(member => member.user.bot).size;
     const onlineUsers = guild.members.cache.filter(member => member.presence?.status === 'online').size;
+    const dndUsers = guild.members.cache.filter(member => member.presence?.status === 'dnd').size;
+    const idleUsers = guild.members.cache.filter(member => member.presence?.status === 'idle').size;
 
 
     const totalUsersChannel = guild.channels.cache.get('1109079433387716628');
@@ -77,10 +79,18 @@ async function updateMemberCount(guild) {
 
     const botsChannel = guild.channels.cache.get('1109079483450921110');
     if (botsChannel) {
-        botsChannel.setName(`🤖・${bots} 🟢・${onlineUsers}`)
+        botsChannel.setName(`🤖・Bots: ${bots}`)
             .catch(console.error);
     } else {
         console.log('Bots channel not found');
+    };
+
+    const userCheckerChannel = guild.channels.cache.get('1111583269578883113');
+    if (userCheckerChannel) {
+        userCheckerChannel.setName(`🟢・${onlineUsers} ⛔️・${dndUsers} 🌙・${idleUsers}`)
+            .catch(console.error);
+    } else {
+        console.log('User checker channel not found');
     }
 };
 
