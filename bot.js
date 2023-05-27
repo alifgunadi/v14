@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { token } = process.env;
+const token = process.env.token;;
 const { Client, Collection, GatewayIntentBits, ActivityType } = require("discord.js");
 const { Configuration, OpenAIApi } = require('openai')
 const fs = require("fs");
