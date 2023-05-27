@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/bot.js",
   "scripts": {
-    "start": "nodemon bot.js",
+    "start": "node bot.js",
     "test": "node ./src/bot.js"
   },
   "keywords": [],

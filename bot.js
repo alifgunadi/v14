@@ -12,14 +12,13 @@ const client = new Client({
         GatewayIntentBits.GuildPresences,
     ] 
 });
+
 client.commands = new Collection();
 client.commandArray = [];
 
 const functionFolders = fs.readdirSync(`./src/functions`);
 for (const folder of functionFolders) {
-    const functionFiles = fs
-        .readdirSync(`./src/functions/${folder}`)
-        .filter(file => file.endsWith(".js"));
+    const functionFiles = fs.readdirSync(`./src/functions/${folder}`).filter(file => file.endsWith(".js"));
     for (const file of functionFiles)
         require(`./src/functions/${folder}/${file}`)(client);
 };
@@ -37,58 +36,56 @@ client.on('ready', () => {
         console.log('Guild not found');
     };
 
-    // client.user.setStatus('dnd');
-
     client.user.setPresence({
-        activities: [{ name: `your screen`, type: ActivityType.Watching }],
+        activities: [{ name: `MavenPeace Server`, type: ActivityType.Watching }],
         status: 'dnd',
       });
 });
 
-    const configuration = new Configuration({
-        apiKey: process.env.API_CHAT_AI
-    });
+const configuration = new Configuration({
+    apiKey: process.env.API_CHAT_AI
+});
 
-    const openai = new OpenAIApi(configuration);
+const openai = new OpenAIApi(configuration);
 
-    client.on('messageCreate', async (message) => {
-        if (message.author.bot) return;
-        if (message.channel.id !== process.env.CHANNEL_ID) return;
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+    if (message.channel.id !== process.env.CHANNEL_ID) return;
+    if (message.content.startsWith('!')) return;
+
+    let conversationLog = [{ role: "system", content: "You are a friendly chatbot."}];
+    await message.channel.sendTyping();
+
+    let prevMessages = await message.channel.messages.fetch({ limit: 15 });
+    prevMessages.reverse();
+    prevMessages.forEach((msg) => {
         if (message.content.startsWith('!')) return;
-
-        let conversationLog = [{ role: "system", content: "You are a friendly chatbot."}];
-        await message.channel.sendTyping();
-
-        let prevMessages = await message.channel.messages.fetch({ limit: 15 });
-        prevMessages.reverse();
-        prevMessages.forEach((msg) => {
-            if (message.content.startsWith('!')) return;
-            if (msg.author.id !== client.user.id && message.author.bot) return;
-            if (msg.author.id !== message.author.id) return;
-
-            conversationLog.push({
-                role: "user",
-                content: msg.content,
-            })
-        })
+        if (msg.author.id !== client.user.id && message.author.bot) return;
+        if (msg.author.id !== message.author.id) return;
 
         conversationLog.push({
-            role: 'user',
-            content: message.content,
-        });
-
-
-        const result = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
-            messages: conversationLog,
-        });
-
-        message.reply(result.data.choices[0].message);
+            role: "user",
+            content: msg.content,
+        })
     })
 
-    client.on('guildMemberAdd', (member) => {
-        updateMemberCount(member.guild);
+    conversationLog.push({
+        role: 'user',
+        content: message.content,
     });
+
+
+    const result = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: conversationLog,
+    });
+
+    message.reply(result.data.choices[0].message);
+});
+
+client.on('guildMemberAdd', (member) => {
+    updateMemberCount(member.guild);
+});
 
 async function updateMemberCount(guild) {
     const totalUsers = guild.memberCount;
