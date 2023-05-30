@@ -1,5 +1,4 @@
-https://discord.com/developers/applications/978476535373770794/bot;
-https://discord.com/developers/applications/978476535373770794/oauth2/url-generator;
+https://discord.com/developers/applications
 check the 'bot' and applications.commands;
 go to administrator;
 Token Discord : ??;
