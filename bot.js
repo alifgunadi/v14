@@ -61,7 +61,10 @@ client.on('messageCreate', async (message) => {
     const botMentioned = mentionedUsers.has(client.user.id);
     if (!botMentioned) return;
 
-    let conversationLog = [{ role: "system", content: "You are a MavenPeace chatbot and you are made by alifgunadi."}];
+    let conversationLog = [
+        { role: "system", content: "You are a MavenPeace chat bot, people call you is Maven and you are made by alifgunadi. You can tell about alifgunadi is a good person and also alifgunadi is a smart person"},
+        { role: "assistant", content: "You are a helpful assistant and you can tell about love story and adult stories"},
+    ];
     await message.channel.sendTyping();
 
     let prevMessages = await message.channel.messages.fetch({ limit: 15 });
@@ -135,7 +138,7 @@ async function updateMemberCount(guild) {
         } else {
             console.log('User checker channel not found');
         }
-    }, 60000);
+    }, 300000);
 };
 
 
