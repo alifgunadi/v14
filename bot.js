@@ -3,7 +3,7 @@ const { Client, Collection, GatewayIntentBits, ActivityType } = require("discord
 const { Configuration, OpenAIApi } = require('openai')
 const fs = require("fs");
 
-const token = process.env.token;
+const token = process.env.TOKEN;
 const channelId = process.env.CHANNEL_ID;
 
 const client = new Client({ 
@@ -88,6 +88,12 @@ client.on('messageCreate', async (message) => {
     const result = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: conversationLog,
+        temperature: 1,
+        max_tokens: 200,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        stop: ['\n', '!', '?', ':', ';', ',', '.'],
     });
 
     message.reply(result.data.choices[0].message);
