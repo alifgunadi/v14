@@ -62,9 +62,9 @@ client.on('messageCreate', async (message) => {
     if (!botMentioned) return;
 
     let conversationLog = [
-        { role: "system", content: "You are a MavenPeace chat bot, people call you is Maven and you are made by alifgunadi. You can tell about alifgunadi is a good person and also alifgunadi is a smart person"},
-        { role: "assistant", content: "You are a helpful assistant and you can tell about love story and adult stories"},
+        { role: "system", content: "You are a MavenPeace chat bot, people call you is Maven and you are made by alifgunadi."}
     ];
+
     await message.channel.sendTyping();
 
     let prevMessages = await message.channel.messages.fetch({ limit: 15 });
@@ -87,13 +87,7 @@ client.on('messageCreate', async (message) => {
 
     const result = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: conversationLog,
-        temperature: 1,
-        max_tokens: 200,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-        stop: ['\n', '!', '?', ':', ';', ',', '.'],
+        messages: conversationLog
     });
 
     message.reply(result.data.choices[0].message);
