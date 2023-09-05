@@ -138,7 +138,7 @@ async function updateMemberCount(guild) {
         } else {
             console.log('User checker channel not found');
         }
-    }, 300000);
+    }, 50000);
 };
 
 
