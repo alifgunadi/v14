@@ -21,7 +21,9 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildPresences,
     ] 
-});
+})
+
+
 
 client.commands = new Collection();
 client.commandArray = [];
@@ -36,7 +38,7 @@ for (const folder of functionFolders) {
 client.handleEvents();
 client.handleCommands();
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log(`✅ ${client.user.tag} is online.`);
   
     const guild = client.guilds.cache.get('878161228751568946');
@@ -46,9 +48,12 @@ client.on('ready', () => {
         console.log('Guild not found');
     };
 
+    const tomy = await client.users.cache.get('255172215195041793').username
+    const tomyId = await client.users.cache.get('255172215195041793').displayAvatarURL()
+
     client.user.setPresence({
-        activities: [{ name: `MavenPeace Server`, type: ActivityType.Watching }],
-        status: 'dnd',
+        activities: [{ name: `${tomy}🔞・${tomyId}`, type: ActivityType.Watching }],
+        status: 'dnd'
       });
 });
 
